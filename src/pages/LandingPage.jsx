@@ -74,7 +74,7 @@ export default function LandingPage() {
 
       {/* --- PREMIUM FLOATING WA BUTTON (LOGO ASLI) --- */}
       <motion.a 
-        href="https://wa.me/628120619997?text=Halo Shaka Production, saya tertarik untuk konsultasi atribut Paskibra."
+        href="https://wa.me/6281220619997?text=Halo Shaka Production, saya tertarik untuk konsultasi atribut Paskibra."
         target="_blank"
         rel="noopener noreferrer"
         whileHover={{ scale: 1.1, y: -5 }}
@@ -263,7 +263,7 @@ export default function LandingPage() {
           </p>
           
           <a 
-            href="https://wa.me/628120619997?text=Halo Shaka Production, saya ingin berdiskusi mengenai pembuatan atribut Paskibra." 
+            href="https://wa.me/6281220619997?text=Halo Shaka Production, saya ingin berdiskusi mengenai pembuatan atribut Paskibra." 
             target="_blank" rel="noreferrer"
             className="inline-flex items-center gap-3 bg-white text-red-600 px-10 py-5 rounded-full font-black text-lg uppercase tracking-widest hover:bg-slate-100 hover:scale-105 transition-all shadow-2xl shadow-red-900/50"
           >
@@ -315,7 +315,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <a 
-                    href={`https://wa.me/628120619997?text=Halo Shaka Production, saya tertarik dengan produk ${selectedProduct.name}.`} 
+                    href={`https://wa.me/6281220619997?text=Halo Shaka Production, saya tertarik dengan produk ${selectedProduct.name}.`} 
                     target="_blank" rel="noreferrer"
                     className="w-full inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-[#1ebe57] transition-all shadow-xl shadow-green-500/20 active:scale-95"
                   >

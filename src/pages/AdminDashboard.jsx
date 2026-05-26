@@ -1,10 +1,12 @@
 // src/pages/AdminDashboard.jsx
+
 import { useState, useEffect, useRef } from "react";
 import { client, urlFor } from "../sanityClient";
 import { 
   LayoutDashboard, Globe, Loader2, Plus, Trash2, 
-  Package, Image as ImageIcon, MessageSquare, LogOut, User, Edit3, X
+  Package, Image as ImageIcon, MessageSquare, LogOut, User, Edit3, X, Key 
 } from "lucide-react";
+
 
 export default function AdminDashboard({ onLogout }) {
   const [products, setProducts] = useState([]);
@@ -24,6 +26,11 @@ export default function AdminDashboard({ onLogout }) {
   const [editingId, setEditingId] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const fileInputRef = useRef(null);
+
+  // State Khusus Pengaturan Akun
+  const [newUsername, setNewUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const fetchData = async () => {
     try {
@@ -118,6 +125,26 @@ export default function AdminDashboard({ onLogout }) {
     }
   };
 
+  // FUNGSI UPDATE KREDENSIAL LOGIN
+  const handleUpdateCredentials = (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      alert("❌ GAGAL: Konfirmasi password tidak cocok bro!");
+      return;
+    }
+    if (newUsername.length < 5 || newPassword.length < 5) {
+      alert("❌ GAGAL: Username dan Password minimal harus 5 karakter!");
+      return;
+    }
+
+    // Simpan ke Local Storage
+    localStorage.setItem("shaka_admin_user", newUsername);
+    localStorage.setItem("shaka_admin_pass", newPassword);
+    
+    alert("✅ MANTAP! Sandi berhasil diubah. Silakan login ulang dengan sandi baru.");
+    onLogout(); // Langsung paksa keluar biar aman
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm("Yakin mau hapus konten ini dari website?")) {
       try {
@@ -156,6 +183,11 @@ export default function AdminDashboard({ onLogout }) {
               <p className="text-xs font-black uppercase tracking-tight text-slate-200">Owner Shaka</p>
               <p className="text-[9px] font-bold text-slate-500 uppercase">Administrator</p>
             </div>
+            <div>
+                <button onClick={() => {setActiveMenu("settings"); resetForm();}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${activeMenu === 'settings' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+                    <Key size={16} /> Pengaturan Akun
+                </button>
+            </div>
           </div>
           <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 bg-slate-800/60 hover:bg-red-600/20 text-slate-400 hover:text-red-500 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors"><LogOut size={14} /> Keluar Sistem</button>
         </div>
@@ -174,96 +206,130 @@ export default function AdminDashboard({ onLogout }) {
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
             
-            {/* FORM AREA */}
-            <div className={`bg-slate-900 border p-6 rounded-2xl lg:col-span-2 transition-all ${editingId ? 'border-amber-500 shadow-lg shadow-amber-900/20' : 'border-slate-800/80'}`}>
-              <div className="flex justify-between items-center border-b border-slate-800 pb-3 mb-5">
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
-                  {editingId ? <span className="text-amber-500 flex items-center gap-2"><Edit3 size={14}/> Edit Data Mode</span> : "Form Entri Konten"}
-                </h3>
-                {editingId && (
-                  <button type="button" onClick={resetForm} className="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 flex items-center gap-1">Batal <X size={10}/></button>
-                )}
+            {/* JIKA MENU PENGATURAN AKUN AKTIF */}
+            {activeMenu === "settings" ? (
+              <div className="bg-slate-900 border border-amber-500/50 p-8 rounded-2xl lg:col-span-5 shadow-xl shadow-amber-900/10 max-w-2xl mx-auto w-full">
+                <div className="flex items-center gap-3 border-b border-slate-800 pb-4 mb-6">
+                  <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-500"><Key size={20} /></div>
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-tight text-white">Ganti Akses Login</h3>
+                    <p className="text-xs text-slate-400 mt-1">Perbarui username dan password khusus untuk perangkat ini.</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleUpdateCredentials} className="flex flex-col gap-5">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Username Baru</label>
+                    <input required type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-amber-500 transition-colors text-white" placeholder="Masukkan username baru..." />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Password Baru</label>
+                    <input required type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-amber-500 transition-colors text-white" placeholder="Masukkan password baru..." />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Konfirmasi Password Baru</label>
+                    <input required type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-amber-500 transition-colors text-white" placeholder="Ketik ulang password baru..." />
+                  </div>
+                  <button type="submit" className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl text-xs uppercase tracking-wider transition-colors flex justify-center items-center gap-2 mt-4 shadow-lg shadow-amber-900/20">
+                    <Key size={16} /> Simpan Sandi & Login Ulang
+                  </button>
+                </form>
               </div>
+            ) : (
+              // JIKA MENU KONTEN AKTIF (PRODUK / PORTFOLIO / TESTIMONI)
+              <>
+                {/* FORM AREA */}
+                <div className={`bg-slate-900 border p-6 rounded-2xl lg:col-span-2 transition-all ${editingId ? 'border-amber-500 shadow-lg shadow-amber-900/20' : 'border-slate-800/80'}`}>
+                  {/* ... (Isi Form Entri Konten biarkan persis sama seperti kodingan sebelumnya) ... */}
+                  <div className="flex justify-between items-center border-b border-slate-800 pb-3 mb-5">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                      {editingId ? <span className="text-amber-500 flex items-center gap-2"><Edit3 size={14}/> Edit Data Mode</span> : "Form Entri Konten"}
+                    </h3>
+                    {editingId && (
+                      <button type="button" onClick={resetForm} className="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 flex items-center gap-1">Batal <X size={10}/></button>
+                    )}
+                  </div>
 
-              <form onSubmit={handleSaveData} className="flex flex-col gap-4">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Nama Konten / Judul</label>
-                  <input required type="text" value={inputName} onChange={(e) => setInputName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Ketik di sini..." />
+                  <form onSubmit={handleSaveData} className="flex flex-col gap-4">
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Nama Konten / Judul</label>
+                      <input required type="text" value={inputName} onChange={(e) => setInputName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Ketik di sini..." />
+                    </div>
+
+                    {activeMenu === "product" && (
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Harga Katalog</label>
+                        <input required type="text" value={inputPrice} onChange={(e) => setInputPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Contoh: Rp 350.000" />
+                      </div>
+                    )}
+
+                    {(activeMenu === "product" || activeMenu === "testimonial") && (
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Deskripsi / Teks Review</label>
+                        <textarea rows="3" value={inputDesc} onChange={(e) => setInputDesc(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Ketik keterangan panjang..."></textarea>
+                      </div>
+                    )}
+
+                    {activeMenu !== "testimonial" && (
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">File Gambar (Abaikan jika tidak ingin ganti foto)</label>
+                        <input type={editingId ? "file" : "file"} required={!editingId} accept="image/*" onChange={(e) => setInputImage(e.target.files[0])} ref={fileInputRef} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-[10px] text-slate-500 file:bg-slate-900 file:border-0 file:text-white file:rounded-md file:px-2 file:py-1 file:mr-2 cursor-pointer" />
+                      </div>
+                    )}
+
+                    <button type="submit" disabled={submitLoading} className={`w-full text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-colors flex justify-center items-center gap-2 mt-2 shadow-lg ${editingId ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-900/20' : 'bg-green-600 hover:bg-green-700 shadow-green-900/10'}`}>
+                      {submitLoading ? <Loader2 className="animate-spin" size={14} /> : (editingId ? <Edit3 size={14} /> : <Plus size={14} />)} 
+                      {editingId ? "Update Konten" : "Kirim Ke Website"}
+                    </button>
+                  </form>
                 </div>
 
-                {activeMenu === "product" && (
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Harga Katalog</label>
-                    <input required type="text" value={inputPrice} onChange={(e) => setInputPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Contoh: Rp 350.000" />
-                  </div>
-                )}
+                {/* LIST AREA DENGAN TOMBOL EDIT */}
+                <div className="bg-slate-900 border border-slate-800/80 p-6 rounded-2xl lg:col-span-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-5 border-b border-slate-800 pb-3">Daftar Arsip Online</h3>
+                  {loading ? (
+                    <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-slate-600" size={24} /></div>
+                  ) : (
+                    <div className="max-h-[450px] overflow-y-auto pr-2 flex flex-col gap-2 custom-scrollbar">
+                      
+                      {activeMenu === "product" && products.map(item => (
+                        <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
+                          <div className="flex items-center gap-4">
+                            <img src={item.image ? urlFor(item.image).url() : "/placeholder.jpg"} className="w-10 h-10 object-cover rounded-lg" />
+                            <div><h4 className="font-bold text-xs text-slate-200">{item.name}</h4><p className="text-[10px] text-red-400 font-bold mt-0.5">{item.price}</p></div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
+                            <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                          </div>
+                        </div>
+                      ))}
 
-                {(activeMenu === "product" || activeMenu === "testimonial") && (
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">Deskripsi / Teks Review</label>
-                    <textarea rows="3" value={inputDesc} onChange={(e) => setInputDesc(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 transition-colors text-white" placeholder="Ketik keterangan panjang..."></textarea>
-                  </div>
-                )}
+                      {activeMenu === "portfolio" && portfolios.map(item => (
+                        <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
+                          <div className="flex items-center gap-4"><img src={item.image ? urlFor(item.image).url() : "/placeholder.jpg"} className="w-10 h-10 object-cover rounded-lg" /><h4 className="font-bold text-xs text-slate-200">{item.title || "Untitled Project"}</h4></div>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
+                            <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                          </div>
+                        </div>
+                      ))}
 
-                {activeMenu !== "testimonial" && (
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-500 block mb-2">File Gambar (Abaikan jika tidak ingin ganti foto)</label>
-                    <input type={editingId ? "file" : "file"} required={!editingId} accept="image/*" onChange={(e) => setInputImage(e.target.files[0])} ref={fileInputRef} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-[10px] text-slate-500 file:bg-slate-900 file:border-0 file:text-white file:rounded-md file:px-2 file:py-1 file:mr-2 cursor-pointer" />
-                  </div>
-                )}
+                      {activeMenu === "testimonial" && testimonials.map(item => (
+                        <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
+                          <div className="max-w-xs"><h4 className="font-bold text-xs text-slate-200">{item.name}</h4><p className="text-[10px] text-slate-400 italic mt-1 line-clamp-2">"{item.message}"</p></div>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
+                            <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                          </div>
+                        </div>
+                      ))}
 
-                <button type="submit" disabled={submitLoading} className={`w-full text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-colors flex justify-center items-center gap-2 mt-2 shadow-lg ${editingId ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-900/20' : 'bg-green-600 hover:bg-green-700 shadow-green-900/10'}`}>
-                  {submitLoading ? <Loader2 className="animate-spin" size={14} /> : (editingId ? <Edit3 size={14} /> : <Plus size={14} />)} 
-                  {editingId ? "Update Konten" : "Kirim Ke Website"}
-                </button>
-              </form>
-            </div>
-
-            {/* LIST AREA DENGAN TOMBOL EDIT */}
-            <div className="bg-slate-900 border border-slate-800/80 p-6 rounded-2xl lg:col-span-3">
-              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-5 border-b border-slate-800 pb-3">Daftar Arsip Online</h3>
-              {loading ? (
-                <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-slate-600" size={24} /></div>
-              ) : (
-                <div className="max-h-[450px] overflow-y-auto pr-2 flex flex-col gap-2 custom-scrollbar">
-                  
-                  {activeMenu === "product" && products.map(item => (
-                    <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
-                      <div className="flex items-center gap-4">
-                        <img src={item.image ? urlFor(item.image).url() : "/placeholder.jpg"} className="w-10 h-10 object-cover rounded-lg" />
-                        <div><h4 className="font-bold text-xs text-slate-200">{item.name}</h4><p className="text-[10px] text-red-400 font-bold mt-0.5">{item.price}</p></div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
-                        <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
-                      </div>
                     </div>
-                  ))}
-
-                  {activeMenu === "portfolio" && portfolios.map(item => (
-                    <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
-                      <div className="flex items-center gap-4"><img src={item.image ? urlFor(item.image).url() : "/placeholder.jpg"} className="w-10 h-10 object-cover rounded-lg" /><h4 className="font-bold text-xs text-slate-200">{item.title || "Untitled Project"}</h4></div>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
-                        <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
-                      </div>
-                    </div>
-                  ))}
-
-                  {activeMenu === "testimonial" && testimonials.map(item => (
-                    <div key={item._id} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${editingId === item._id ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-950 border-slate-900 hover:border-slate-700'}`}>
-                      <div className="max-w-xs"><h4 className="font-bold text-xs text-slate-200">{item.name}</h4><p className="text-[10px] text-slate-400 italic mt-1 line-clamp-2">"{item.message}"</p></div>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleEditClick(item)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-amber-900/20 text-slate-500 hover:text-amber-500 rounded-lg transition-colors"><Edit3 size={14} /></button>
-                        <button onClick={() => handleDelete(item._id)} className="p-2 bg-slate-900 border border-slate-800 hover:bg-red-900/20 text-slate-500 hover:text-red-400 rounded-lg transition-colors"><Trash2 size={14} /></button>
-                      </div>
-                    </div>
-                  ))}
-
+                  )}
                 </div>
-              )}
-            </div>
-
+              </>
+            )}
           </div>
         </div>
       </div>

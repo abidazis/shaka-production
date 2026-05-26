@@ -22,15 +22,20 @@ export default function App() {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    // KREDENSIAL LOGIN ADMIN
-    if (username === "adminshaka" && password === "shaka2026") {
+    
+    // Tarik data kredensial dari memori browser, jika kosong gunakan default
+    const storedUser = localStorage.getItem("shaka_admin_user") || "adminshaka";
+    const storedPass = localStorage.getItem("shaka_admin_pass") || "shaka2026";
+
+    // Pengecekan dinamis
+    if (username === storedUser && password === storedPass) {
       setIsAuthenticated(true);
       localStorage.setItem("shaka_admin_session", "active");
       setLoginError("");
     } else {
       setLoginError("Kombinasi sandi salah, akses ditolak bro!");
     }
-  };
+  };  
 
   const handleLogout = () => {
     setIsAuthenticated(false);
