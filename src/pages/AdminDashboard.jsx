@@ -184,11 +184,9 @@ export default function AdminDashboard({ onLogout }) {
               <p className="text-[9px] font-bold text-slate-500 uppercase">Administrator</p>
             </div>
             <div>
-                <button onClick={() => {setActiveMenu("settings"); resetForm();}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${activeMenu === 'settings' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
-                    <Key size={16} /> Pengaturan Akun
-                </button>
-            </div>
-          </div>
+          <button onClick={() => {setActiveMenu("settings"); resetForm();}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${activeMenu === 'settings' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
+            <Key size={16} /> Pengaturan Akun
+          </button>
           <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 bg-slate-800/60 hover:bg-red-600/20 text-slate-400 hover:text-red-500 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors"><LogOut size={14} /> Keluar Sistem</button>
         </div>
       </div>
