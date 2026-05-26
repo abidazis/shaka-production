@@ -174,7 +174,7 @@ export default function AdminDashboard({ onLogout }) {
           
           <div className="hidden md:flex items-center gap-3 px-2">
             <LayoutDashboard className="text-red-500 animate-pulse" size={24} />
-            <h1 className="text-sm font-black uppercase tracking-[0.2em] text-slate-200">Shaka Suite v1.2</h1>
+            <h1 className="text-sm font-black uppercase tracking-[0.2em] text-slate-200">Shaka Panel</h1>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -187,6 +187,7 @@ export default function AdminDashboard({ onLogout }) {
             <button onClick={() => changeMenu("settings")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${activeMenu === 'settings' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'text-slate-400 hover:bg-slate-800'}`}>
               <Key size={16} /> Pengaturan Akun
             </button>
+            <div className="opacity-30 border border-dashed border-slate-700 px-4 py-3 rounded-xl text-[10px] font-bold text-slate-400 uppercase tracking-wider">🔒 Menu Finansial</div>
           </div>
         </div>
 
