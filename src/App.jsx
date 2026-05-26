@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import LandingPage from "./pages/LandingPage";
 import AdminDashboard from "./pages/AdminDashboard";
-import { Lock, Loader2 } from "lucide-react";
+import { Lock } from "lucide-react";
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -12,7 +12,7 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // Cek status login dari LocalStorage agar ketika direfresh tidak usah login ulang
+  // Cek sesi login di memori browser
   useEffect(() => {
     const session = localStorage.getItem("shaka_admin_session");
     if (session === "active") {
@@ -22,7 +22,7 @@ export default function App() {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    // SILAKAN KUSTOMISASI USERNAME & PASSWORD ADMIN DISINI BRO
+    // KREDENSIAL LOGIN ADMIN
     if (username === "adminshaka" && password === "shaka2026") {
       setIsAuthenticated(true);
       localStorage.setItem("shaka_admin_session", "active");
@@ -38,7 +38,7 @@ export default function App() {
     window.location.href = "/";
   };
 
-  // --- ARSITEKTUR ROUTER SECURITY ---
+  // --- ROUTER & SECURITY GATE ---
   if (currentPath === "/admin") {
     if (!isAuthenticated) {
       return (
@@ -60,9 +60,10 @@ export default function App() {
         </div>
       );
     }
+    // Jika lolos login, render Dashboard Admin
     return <AdminDashboard onLogout={handleLogout} />;
   }
 
-  // Jika diakses selain jalur /admin, arahkan ke landing page user biasa
+  // Jika bukan /admin, render Landing Page Utama
   return <LandingPage />;
 }
